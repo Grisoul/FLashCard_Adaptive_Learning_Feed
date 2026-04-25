@@ -7,6 +7,11 @@ import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 
+
+interface VerticalFeedProps {
+    notes: string;
+}
+
 type FeedResponse = {
     batchNumber: number;
     cards: FlashCardType[];
@@ -23,19 +28,22 @@ type FeedRequest = {
 };
 
 
-export default function VerticalFeed() {
+export default function VerticalFeed( { notes }: VerticalFeedProps ) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
 
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
-    const { data, error, execute, isLoading } = useMutation(fetchFeed);
+    const { data, error, execute, isLoading } = useMutation(fetchFeed as any);
 
     useEffect(() => {
         const fetch = async () => {
             console.log("fetching");
             // TODO: pass notes here
-            await execute("statistics");
+            await execute({
+                notes,
+                batchNumber: 1,
+            });
         }
         fetch();
     }, [])
@@ -49,6 +57,8 @@ export default function VerticalFeed() {
             setLastTop(scrollBox.current!.scrollTop);
         }
     }
+
+    const feedData = data as FeedResponse | null;
 
     return (
         <React.Fragment>
@@ -70,7 +80,7 @@ export default function VerticalFeed() {
                         <div className="flex h-full">
                             <Loading />
                         </div>
-                        : mockData.map((content, idx) => (
+                        : (feedData?.cards ?? []).map((content, idx) => (
                             <div key={idx}
                                 className="
                         px-2

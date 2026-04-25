@@ -9,8 +9,10 @@ import UploadCard from "@/components/ui/upload-card"
 import { HouseIcon, HouseSimpleIcon, UserCircleIcon } from "@phosphor-icons/react";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Page() {
+  const [notes, setNotes] = useState("");
     return (
         <Container className={`animated-gradient`}>
             <TiktokFrame className="border-3 border-accent">
