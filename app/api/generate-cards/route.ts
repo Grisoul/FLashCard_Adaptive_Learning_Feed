@@ -5,7 +5,7 @@ export async function POST(req: Request) {
     try
     {
         //Get user notes input
-        const { notes } = await req.json();
+        const { notes, batchNumber = 1} = await req.json();
 
         //If input is empty, respond with an error
         if (!notes) {
@@ -24,18 +24,23 @@ export async function POST(req: Request) {
         const response = await ai.models.generateContent({
             model: "gemma-4-26b-a4b-it",
             contents: `
-            Convert these notes into study cards and quiz
+            Convert these notes into a continuous study feed
+
+            This is batch ${batchNumber}.
 
             Please create the exact number of cards and quizzes indicated below:
-            cards: 4
-            quizzes: 3
+            cards: 20
+            quizzes: 2
+
+            If this is a later batch, continue exploring the same notes with new examples, deeper explanations, and reinforcement. Some repetition is okay for retention, but do not copy the exact same card wording.
 
             Return ONLY valid JSON:
             {
+                "batchNumber": ${batchNumber},
                 "cards": [
                     { "front": "...", "back": "..." }
                 ],
-                "quiz": [{
+                "quizzes": [{
                     "question": "...",
                     "options": ["...", "...", "...", "..."],
                     "answer": Index of answer in options object

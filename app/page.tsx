@@ -1,4 +1,4 @@
-'use client';
+/*'use client';
 
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container"
@@ -29,11 +29,11 @@ export default function Page() {
         </Container>
     )
 }
+*/
 
 
 
 
-/*
 "use client";
 
 import { useState } from "react";
@@ -89,4 +89,4 @@ export default function Page() {
       )}
     </div>
   );
-}*/
+}
