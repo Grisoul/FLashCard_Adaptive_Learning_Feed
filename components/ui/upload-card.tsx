@@ -11,20 +11,45 @@ enum State {
     RECENTS
 };
 
-export default function UploadCard() {
+interface UploadCardProps {
+    onTextExtracted: (text: string) => void;
+}
+
+export default function UploadCard( { onTextExtracted }: UploadCardProps ) {
     const [currentState, setCurrentState] = useState(State.UPLOAD);
     const [uploadedFiles, setUploadedFiles] = useState(Array<File>());
+    const [rawText, setRawText] = useState("");
 
     const handleChangeState = (state: State) => {
         setCurrentState(state);
     };
 
-    const handleFileUpload = (acceptedFiles: Array<File>) => {
+    const handleFileUpload = async (acceptedFiles: Array<File>) => {
         setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
-        console.log(acceptedFiles);
+        
+        const extractedTexts = await Promise.all(
+            acceptedFiles.map(async (file) => {
+                const text = await extractTextFromFile(file);
+                return `\n\n--- ${file.name} ---\n${text}`;
+            })
+        );
+
+        const combinedText = extractedTexts.join("\n");
+        setRawText((prev) => prev + combinedText);
+        onTextExtracted(combinedText);
+
+        console.log("Extracted raw text:", combinedText);
 
         //change state
         setCurrentState(State.RECENTS);
+    };
+
+    const extractTextFromFile = async (file: File): Promise<string> => {
+        if (file.type === "text/plain" || file.name.endsWith(".txt")){
+            return await file.text();
+        }
+
+        return `Unsupported file type: ${file.name}`;
     };
 
     return (
@@ -86,6 +111,11 @@ export default function UploadCard() {
                                 ))}
                         </ul>
                     }
+
+                    {rawText && (
+                        <pre className="mt-4 max-h-40 overflow-y-auto text-xs whitespace-pre-wrap">
+                        {rawText}
+                        </pre>)}
                 </CardContent>
             </Card>
         </React.Fragment>

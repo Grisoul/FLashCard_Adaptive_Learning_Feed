@@ -7,7 +7,28 @@ import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 
-export default function VerticalFeed() {
+
+interface VerticalFeedProps {
+    notes: string;
+}
+
+type FeedResponse = {
+    batchNumber: number;
+    cards: FlashCardType[];
+    quizzes: {
+        question: string;
+        options: string[];
+        answer: number;
+    }[];
+};
+
+type FeedRequest = {
+    notes: string;
+    batchNumber: number;
+};
+
+
+export default function VerticalFeed( { notes }: VerticalFeedProps ) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
 
@@ -19,7 +40,11 @@ export default function VerticalFeed() {
         const fetch = async () => {
             console.log("fetching");
             // TODO: pass notes here
-            await execute("statistics");
+            await execute({
+                notes,
+                batchNumber: 1,
+            });
+            console.log("notes received by feed:", notes);
         }
         fetch();
     }, [])

@@ -18,7 +18,7 @@ export default function Feed() {
                     <div className="">
                     </div>
                     <div className="flex-1 w-full flex items-center justify-center p-5">
-                        <VerticalFeed />
+                        <VerticalFeed notes="statistics" />
                     </div>
                     <div className="flex w-full justify-center gap-16 items-center text-4xl">
                         <HomeButton />
