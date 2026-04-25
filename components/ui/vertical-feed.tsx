@@ -7,21 +7,26 @@ import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 
-// mock
-const mockData: FlashCardType[] = [
-    {
-        front: "Test",
-        back: "back"
-    },
-    {
-        front: "Test",
-        back: "back"
-    },
-];
+type FeedResponse = {
+    batchNumber: number;
+    cards: FlashCardType[];
+    quizzes: {
+        question: string;
+        options: string[];
+        answer: number;
+    }[];
+};
+
+type FeedRequest = {
+    notes: string;
+    batchNumber: number;
+};
+
 
 export default function VerticalFeed() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
+
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
     const { data, error, execute, isLoading } = useMutation(fetchFeed);
