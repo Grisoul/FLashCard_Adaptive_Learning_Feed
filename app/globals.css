@@ -143,6 +143,19 @@
   animation: gradientShift 8s ease infinite;
 }
 
+
+.animated-card-gradient-1 {
+  background: linear-gradient(-75deg, #fff, #e73c7e, #999, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease infinite;
+}
+
+.animated-card-gradient-2 {
+  background: linear-gradient(-75deg, #fff, #1111, #999, #000);
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease infinite;
+}
+
 .scrollbar-hide {
   /* Enable scrolling */
   overflow-y: scroll; 
