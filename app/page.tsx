@@ -29,3 +29,64 @@ export default function Page() {
         </Container>
     )
 }
+
+
+
+
+/*
+"use client";
+
+import { useState } from "react";
+
+export default function Page() {
+  const [notes, setNotes] = useState("");
+  const [response, setResponse] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const generateCards = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/generate-cards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notes }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setResponse(data);
+    } catch (err) {
+      console.error(err);
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Study Generator Test</h1>
+
+      <textarea
+        placeholder="Enter your notes here..."
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        style={{ width: "100%", height: "150px", marginBottom: "10px" }}
+      />
+
+      <br />
+
+      <button onClick={generateCards} disabled={loading}>
+        {loading ? "Generating..." : "Generate Cards"}
+      </button>
+
+      {response && (
+        <pre style={{ marginTop: "20px" }}>
+          {JSON.stringify(response, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}*/
