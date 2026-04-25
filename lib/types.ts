@@ -1,5 +1,5 @@
 
-export interface FlashCard {
+export interface FlashCardType {
     front: string;
     back: string;
 }
