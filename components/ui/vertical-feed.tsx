@@ -4,21 +4,26 @@ import FlashCard from "./FlashCard";
 import useMutation from "@/hooks/useMutation";
 import { fetchFeed } from "@/lib/fetchFeed";
 
-// mock
-const mockData: FlashCardType[] = [
-    {
-        front: "Test",
-        back: "back"
-    },
-    {
-        front: "Test",
-        back: "back"
-    },
-];
+type FeedResponse = {
+    batchNumber: number;
+    cards: FlashCardType[];
+    quizzes: {
+        question: string;
+        options: string[];
+        answer: number;
+    }[];
+};
+
+type FeedRequest = {
+    notes: string;
+    batchNumber: number;
+};
+
 
 export default function VerticalFeed() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
+
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
     const { data, error, execute, isLoading } = useMutation(fetchFeed);
@@ -55,7 +60,7 @@ export default function VerticalFeed() {
                 snap-mandatory"
                 onScrollEnd={() => handleScroll()}
             >
-                {mockData.map((content, idx) => (
+                {cards.map((content, idx) => (
                     <div key={idx}
                         className="
                         px-2
