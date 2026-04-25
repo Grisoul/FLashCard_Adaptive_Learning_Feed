@@ -1,45 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FeedResponse, FlashCardType, QuizType } from "@/lib/types";
+import React, { useEffect, useRef, useState } from "react";
 import FlashCard from "./FlashCard";
 import useMutation from "@/hooks/useMutation";
 import { fetchFeed } from "@/lib/fetchFeed";
 import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
+import { FeedResponse } from "@/lib/types";
 
 
 interface VerticalFeedProps {
     notes: string;
 }
 
-type FeedResponse = {
-    batchNumber: number;
-    cards: FlashCardType[];
-    quizzes: {
-        question: string;
-        options: string[];
-        answer: number;
-    }[];
-};
-
-type FeedRequest = {
-    notes: string;
-    batchNumber: number;
-};
-
-
-export default function VerticalFeed( { notes }: VerticalFeedProps ) {
+export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
 
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
-    const { data, error, execute, isLoading } = useMutation<FeedResponse>(fetchFeed);
+    const { data, error, execute, isLoading } = useMutation<FeedResponse>(fetchFeed as any);
 
     useEffect(() => {
         const fetch = async () => {
             console.log("fetching");
-            // TODO: pass notes here
             await execute({
                 notes,
                 batchNumber: 1,

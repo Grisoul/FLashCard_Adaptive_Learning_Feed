@@ -4,10 +4,9 @@ import Container from "@/components/ui/container";
 import HomeButton from "@/components/ui/home-button";
 import { TiktokFrame } from "@/components/ui/tiktokframe";
 import UploadButton from "@/components/ui/upload-button";
-import UploadCard from "@/components/ui/upload-card";
 import VerticalFeed from "@/components/ui/vertical-feed";
 import { UserCircleIcon } from "@phosphor-icons/react";
-import React, { useState } from "react";
+import React from "react";
 
 export default function Feed() {
 

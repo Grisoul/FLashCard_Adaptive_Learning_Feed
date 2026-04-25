@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "./card";
 import { Button } from "./button";
 import Dropzone from "react-dropzone";
-import { FileIcon, FileImageIcon } from "@phosphor-icons/react/dist/ssr";
+import { FileIcon } from "@phosphor-icons/react/dist/ssr";
 
 enum State {
     UPLOAD,
@@ -15,7 +15,7 @@ interface UploadCardProps {
     onTextExtracted: (text: string) => void;
 }
 
-export default function UploadCard( { onTextExtracted }: UploadCardProps ) {
+export default function UploadCard({ onTextExtracted }: UploadCardProps) {
     const [currentState, setCurrentState] = useState(State.UPLOAD);
     const [uploadedFiles, setUploadedFiles] = useState(Array<File>());
     const [rawText, setRawText] = useState("");
@@ -26,7 +26,7 @@ export default function UploadCard( { onTextExtracted }: UploadCardProps ) {
 
     const handleFileUpload = async (acceptedFiles: Array<File>) => {
         setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
-        
+
         const extractedTexts = await Promise.all(
             acceptedFiles.map(async (file) => {
                 const text = await extractTextFromFile(file);
@@ -45,7 +45,7 @@ export default function UploadCard( { onTextExtracted }: UploadCardProps ) {
     };
 
     const extractTextFromFile = async (file: File): Promise<string> => {
-        if (file.type === "text/plain" || file.name.endsWith(".txt")){
+        if (file.type === "text/plain" || file.name.endsWith(".txt")) {
             return await file.text();
         }
 
@@ -114,7 +114,7 @@ export default function UploadCard( { onTextExtracted }: UploadCardProps ) {
 
                     {rawText && (
                         <pre className="mt-4 max-h-40 overflow-y-auto text-xs whitespace-pre-wrap">
-                        {rawText}
+                            {rawText}
                         </pre>)}
                 </CardContent>
             </Card>

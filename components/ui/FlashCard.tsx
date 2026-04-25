@@ -2,7 +2,7 @@
 
 import { FlashCardType } from "@/lib/types";
 import { Card, CardContent } from "./card";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface FlashCardProps {
     id: number;
@@ -10,7 +10,6 @@ interface FlashCardProps {
     descriptionTitle?: string;
     description?: string;
 }
-
 
 export default function FlashCard(props: FlashCardProps) {
 
@@ -25,7 +24,6 @@ export default function FlashCard(props: FlashCardProps) {
         const i = Math.round(Math.random() * (animGradients.length - 1));
         const animation = animGradients[i];
         console.log("animation", animation);
-        //frontRef.current?.classList.add(animation);
     }, [props.id]);
 
     function handleTap() {
@@ -44,7 +42,6 @@ export default function FlashCard(props: FlashCardProps) {
             className="w-full h-full cursor-pointer flex flex-col"
             style={{ perspective: "1000px" }}
         >
-            {/* 3D flip area — takes remaining space */}
             <div
                 className="w-full flex-1 min-h-0"
                 style={{

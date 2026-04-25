@@ -1,4 +1,6 @@
-export async function fetchFeed(body: {notes: string, batchNumber: number}) {
+import { FeedResponse } from "./types";
+
+export async function fetchFeed(body: { notes: string, batchNumber: number }) {
     try {
         const res = await fetch("/api/generate-cards", {
             method: "POST",
@@ -11,9 +13,8 @@ export async function fetchFeed(body: {notes: string, batchNumber: number}) {
         const data: Promise<FeedResponse> = await res.json();
         console.log(data);
 
-        if (!res.ok)
-        {
-            throw new Error(data.error ?? "could not fetch");
+        if (!res.ok) {
+            throw new Error("Could not fetch");
         }
 
         return data;
