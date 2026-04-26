@@ -19,13 +19,6 @@ export default function FlashCard(props: FlashCardProps) {
 
     const frontRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        const animGradients = ["animated-card-gradient-1", "animated-card-gradient-2"];
-        const i = Math.round(Math.random() * (animGradients.length - 1));
-        const animation = animGradients[i];
-        console.log("animation", animation);
-    }, [props.id]);
-
     function handleTap() {
         const newTaps = taps + 1;
         setTaps(newTaps);

@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 
 export async function POST(req: Request) {
-    try
-    {
+    try {
         //Get user notes input
-        const { notes, batchNumber = 1} = await req.json();
+        const { notes, batchNumber = 1 } = await req.json();
 
         //If input is empty, respond with an error
         if (!notes) {
@@ -29,8 +28,8 @@ export async function POST(req: Request) {
             This is batch ${batchNumber}.
 
             Please create the exact number of cards and quizzes indicated below:
-            cards: 20
-            quizzes: 2
+            cards: 10
+            quizzes: 5
 
             If this is a later batch, continue exploring the same notes with new examples, deeper explanations, and reinforcement. Some repetition is okay for retention, but do not copy the exact same card wording.
 
@@ -56,18 +55,18 @@ export async function POST(req: Request) {
 
         if (!text) {
             return NextResponse.json(
-            { error: "Gemma returned no text" },
-            { status: 500 }
-        );
-}
+                { error: "Gemma returned no text" },
+                { status: 500 }
+            );
+        }
 
         const cleaned = text.replace(/```json|```/g, "").trim();
 
         let parsed;
 
-        try{
+        try {
             parsed = JSON.parse(cleaned);
-        }catch (e){
+        } catch (e) {
             console.error("JSON Parse Failed:", cleaned);
             return NextResponse.json({
                 error: "AI Formatting Issue",
@@ -77,9 +76,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json(parsed);
 
-    } catch(err) {
+    } catch (err) {
         return NextResponse.json(
-            { error: "Something went wrong" }, 
+            { error: "Something went wrong" },
             { status: 500 }
         );
     }

@@ -6,6 +6,8 @@ import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { FeedResponse } from "@/lib/types";
+import QuizCard from "./quiz-card";
+import QuizResultSummary from "./quiz-result-summary";
 
 
 interface VerticalFeedProps {
@@ -15,6 +17,11 @@ interface VerticalFeedProps {
 export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [lastTop, setLastTop] = useState(0);
+    const [correctCount, setCorrectCount] = useState(0);
+
+    const incrementCorrect = () => {
+        setCorrectCount(correctCount + 1);
+    }
 
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
@@ -22,12 +29,10 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
 
     useEffect(() => {
         const fetch = async () => {
-            console.log("fetching");
             await execute({
                 notes,
                 batchNumber: 1,
             });
-            console.log("notes received by feed:", notes);
         }
         fetch();
     }, [])
@@ -72,10 +77,19 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 ))}
 
                 {data.quizzes.map((quiz, idx) => (
-                    <div key={idx}>
-                        {quiz.question}
+                    <div key={idx}
+                        className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center" >
+                        <QuizCard quiz={quiz} incrementCorrectCount={incrementCorrect} />
                     </div>
                 ))}
+
+                {
+                    data &&
+                    <div
+                        className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center" >
+                        <QuizResultSummary correctCount={correctCount} size={data.quizzes.length} />
+                    </div>
+                }
             </>
         );
     };
