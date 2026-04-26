@@ -6,7 +6,7 @@ export interface FlashCardType {
 
 export interface QuizType {
     question: string;
-    options: string[4];
+    options: string[];
     answer: number
 }
 

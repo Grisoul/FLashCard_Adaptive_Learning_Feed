@@ -6,6 +6,7 @@ import Loading from "./loading";
 import { Card } from "./card";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { FeedResponse } from "@/lib/types";
+import QuizCard from "./quiz-card";
 
 
 interface VerticalFeedProps {
@@ -14,10 +15,13 @@ interface VerticalFeedProps {
 
 export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [cards, setCards] = useState<any[]>([]);
+    //const [cards, setCards] = useState<any[]>([]);
+    //const [quizzes, setQuizzes] = useState<any[]>([]);
+    const [batches, setBatches] = useState<FeedResponse[]>([]);
     const [batchNumber, setBatchNumber] = useState(1);
     const [isFetchingNextBatch, setIsFetchingNextBatch] = useState(false);
 
+    const cards = batches.reduce((sum, batch) => sum + batch.cards.length, 0);
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
     const { data, error, execute, isLoading } = useMutation<FeedResponse>(fetchFeed as any);
@@ -36,11 +40,14 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
     useEffect(() => {
         if (!data || typeof data === "boolean") return;
 
-        setCards((prev) => [...prev, ...data.cards]);
+        //setCards((prev) => [...prev, ...data.cards]);
+        //setQuizzes((prev) => [...prev, ...data.quizzes]);
+        setBatches((prev) => [...prev, data]);
     }, [data]);
 
+    //Change this back to cards if batches dosent work
     useEffect(() => {
-        if (currentIndex > 0 && currentIndex >= cards.length - 10 && !isFetchingNextBatch) {
+        if (currentIndex > 0 && currentIndex >= cards - 10 && !isFetchingNextBatch) {
             const nextBatch = batchNumber + 1;
 
             setIsFetchingNextBatch(true);
@@ -59,7 +66,8 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 setIsFetchingNextBatch(false);
             });
         }
-    }, [currentIndex, cards.length, isFetchingNextBatch, batchNumber, notes]);
+        //CHange this back to cards if batches dosent work
+    }, [currentIndex, cards, isFetchingNextBatch, batchNumber, notes]);
 
     const handleScroll = () => {
         if (!scrollBox.current) return;
@@ -80,8 +88,8 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 </p>
             </Card>
         );
-
-        if (isLoading && cards.length === 0) return (
+        //Change this back to cards if batches dosent work
+        if (isLoading && batches.length === 0) return (
             <div className="flex h-full">
                 <Loading />
             </div>
@@ -90,22 +98,29 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
         if (!data || typeof data === "boolean") return null;
 
         return (
-            <>
-                {cards.map((content, idx) => (
-                    <div
-                        key={idx}
-                        className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
-                    >
-                        <FlashCard id={idx} flashcard={content} />
-                    </div>
+  <>
+            {batches.map((batch, batchIndex) => (
+            <React.Fragment key={batchIndex}>
+                {batch.cards.map((content, idx) => (
+                <div
+                    key={`card-${batchIndex}-${idx}`}
+                    className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
+                >
+                    <FlashCard id={batchIndex * 20 + idx} flashcard={content} />
+                </div>
                 ))}
 
-                {data.quizzes.map((quiz, idx) => (
-                    <div key={idx}>
-                        {quiz.question}
-                    </div>
+                {batch.quizzes.map((quiz, idx) => (
+                <div
+                    key={`quiz-${batchIndex}-${idx}`}
+                    className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
+                >
+                    <QuizCard quiz={quiz} />
+                </div>
                 ))}
-            </>
+            </React.Fragment>
+            ))}
+        </>
         );
     };
 
@@ -127,3 +142,27 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
         </React.Fragment>
     );
 }
+
+
+
+/*return (
+            <>
+                {/*batches.cards.map((content, idx) => (
+                    <div
+                        key={idx}
+                        className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
+                    >
+                        <FlashCard id={idx} flashcard={content} />
+                    </div>
+                ))}
+
+                {data.quizzes.map((quiz, idx) => (
+                    <div
+                        key={`quiz-${idx}`}
+                        className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
+                    >
+                        <QuizCard quiz={quiz} />
+                    </div>
+                ))}
+            </>
+        );*/
