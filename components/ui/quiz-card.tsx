@@ -30,7 +30,9 @@ export default function QuizCard(props: QuizCardProps) {
         return (
             <div className="flex flex-col gap-4">
                 {quiz.options.map((q, i) => (
-                    <Button className="flex flex-wrap" key={i} onClick={() => handleClick(i)}>{q}</Button>
+                    <div className="flex flex-wrap w-full">
+                        <Button className="h-auto w-full py-2 whitespace-normal break-words" key={i} onClick={() => handleClick(i)}>{q}</Button>
+                    </div>
                 ))}
             </div>
         );
@@ -40,17 +42,17 @@ export default function QuizCard(props: QuizCardProps) {
         const renderBtn = (msg: string, i: number) => {
             if (i === ans && ans !== quiz.answer) {
                 return (
-                    <Button key={i} className="bg-red-500 pointer-events-none flex flex-wrap" > {msg}</Button>
+                    <Button key={i} className="h-auto w-full py-2 whitespace-normal break-words bg-red-500 pointer-events-none" > {msg}</Button>
                 );
             }
 
             if (i === quiz.answer) {
                 return (
-                    <Button key={i} className="bg-green-500 pointer-events-none flex flex-wrap">{msg}</Button>
+                    <Button key={i} className="h-auto w-full py-2 whitespace-normal break-words bg-green-500 pointer-events-none">{msg}</Button>
                 );
             } else {
                 return (
-                    <Button className="pointer-events-none flex flex-wrap" key={i} variant="outline">{msg}</Button>
+                    <Button className="h-auto w-full py-2 whitespace-normal break-words pointer-events-none" key={i} variant="outline">{msg}</Button>
                 );
             }
 
