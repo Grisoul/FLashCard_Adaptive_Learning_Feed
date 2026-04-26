@@ -14,7 +14,9 @@ interface VerticalFeedProps {
 
 export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [lastTop, setLastTop] = useState(0);
+    const [cards, setCards] = useState<any[]>([]);
+    const [batchNumber, setBatchNumber] = useState(1);
+    const [isFetchingNextBatch, setIsFetchingNextBatch] = useState(false);
 
     const scrollBox = useRef<HTMLDivElement | null>(null);
 
@@ -27,19 +29,46 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 notes,
                 batchNumber: 1,
             });
-            console.log("notes received by feed:", notes);
         }
         fetch();
     }, [])
 
-    const handleScroll = () => {
-        if (scrollBox.current!.scrollTop > lastTop) {
-            setCurrentIndex(currentIndex + 1);
-            setLastTop(scrollBox.current!.scrollTop);
-        } else if (scrollBox.current!.scrollTop < lastTop) {
-            setCurrentIndex(currentIndex - 1);
-            setLastTop(scrollBox.current!.scrollTop);
+    useEffect(() => {
+        if (!data || typeof data === "boolean") return;
+
+        setCards((prev) => [...prev, ...data.cards]);
+    }, [data]);
+
+    useEffect(() => {
+        if (currentIndex > 0 && currentIndex >= cards.length - 10 && !isFetchingNextBatch) {
+            const nextBatch = batchNumber + 1;
+
+            setIsFetchingNextBatch(true);
+
+            execute({
+                notes,
+                batchNumber: nextBatch,
+            })
+            .then(() => {
+                setBatchNumber(nextBatch);
+            })
+            .catch((err) => {
+                console.error("Error fetching next batch:", err);
+            })
+            .finally(() => {
+                setIsFetchingNextBatch(false);
+            });
         }
+    }, [currentIndex, cards.length, isFetchingNextBatch, batchNumber, notes]);
+
+    const handleScroll = () => {
+        if (!scrollBox.current) return;
+
+        const top = scrollBox.current.scrollTop;
+        const height = scrollBox.current.clientHeight;
+        const index = Math.round(top / height);
+
+        setCurrentIndex(index);
     }
 
     const renderContent = () => {
@@ -52,7 +81,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
             </Card>
         );
 
-        if (isLoading) return (
+        if (isLoading && cards.length === 0) return (
             <div className="flex h-full">
                 <Loading />
             </div>
@@ -62,7 +91,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
 
         return (
             <>
-                {data.cards.map((content, idx) => (
+                {cards.map((content, idx) => (
                     <div
                         key={idx}
                         className="px-2 py-10 w-full h-[550px] shrink-0 snap-start flex items-center justify-center"
@@ -91,7 +120,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 snap-always 
                 snap-mandatory
                 "
-                onScrollEnd={() => handleScroll()}
+                onScroll={handleScroll}
             >
                 {renderContent()}
             </div>

@@ -35,8 +35,9 @@ export default function UploadCard({ onTextExtracted }: UploadCardProps) {
         );
 
         const combinedText = extractedTexts.join("\n");
-        setRawText((prev) => prev + combinedText);
-        onTextExtracted(combinedText);
+        const newText = rawText + combinedText;
+        setRawText(newText);
+        onTextExtracted(newText);
 
         console.log("Extracted raw text:", combinedText);
 
