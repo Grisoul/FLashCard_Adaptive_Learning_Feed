@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             This is batch ${batchNumber}.
 
             Please create the exact number of cards and quizzes indicated below:
-            cards: 10
+            cards: 20
             quizzes: 5
 
             If this is a later batch, continue exploring the same notes with new examples, deeper explanations, and reinforcement. Some repetition is okay for retention, but do not copy the exact same card wording.

@@ -24,7 +24,10 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [mounted, setMounted] = useState(false);
     const [correctCount, setCorrectCount] = useState(0);
     const [quizCount, setQuizCount] = useState(0);
-    const [batchNumber, setBatchNumber] = useState(1);
+
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+    const nextBatchRef = useRef(2);
+    const scrollBox = useRef<HTMLDivElement | null>(null);
 
     const [feed, setFeed] = useState<FeedItem[]>([]);
 
@@ -34,8 +37,24 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const fetchBatch = async (batch: number) => {
         await execute({ notes, batchNumber: batch });
         setInitialLoading(false);
-        setBatchNumber(batchNumber + 1);
-        console.log("finished fetching")
+        nextBatchRef.current = batch + 1;
+        console.log("fetched batch");
+    };
+
+    const handleScroll = () => {
+        const el = scrollBox.current;
+        if (!el || isFetchingMore || isInitialLoading) return;
+
+        const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+        const halfwayThroughCurrentBuffer = remaining < el.clientHeight * 10;
+
+        if (halfwayThroughCurrentBuffer) {
+            setIsFetchingMore(true);
+
+            fetchBatch(nextBatchRef.current).finally(() => {
+            setIsFetchingMore(false);
+            });
+        }
     };
 
     // initial fetch
@@ -54,7 +73,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 {
                     type: "card" as const,
                     content: c,
-                    id: `card-${batchNumber}-${i}` + crypto.randomUUID()
+                    id: `card-${data.batchNumber}-${i}-${crypto.randomUUID()}`
                 })
             );
 
@@ -62,7 +81,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
                 {
                     type: "quiz" as const,
                     content: q,
-                    id: `quiz-${batchNumber}-${i}` + crypto.randomUUID()
+                    id: `quiz-${data.batchNumber}-${i}-${crypto.randomUUID()}`
                 })
             );
 
@@ -74,7 +93,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
             }
 
             // push result summary at the end of each batch
-            newItems.push({ type: "result", id: `result-${batchNumber}` });
+            newItems.push({ type: "result", id: `result-${data.batchNumber}-${crypto.randomUUID()}` });
 
             setFeed(prev => [...prev, ...newItems]);
         }
@@ -84,60 +103,45 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const incrementCorrect = () => setCorrectCount(c => c + 1);
     const incrementQuizCount = () => setQuizCount(c => c + 1);
 
-    const handleLoadMore = () => {
-        console.log("fetching more...")
-        fetchBatch(batchNumber);
-    }
-
     return (
         <React.Fragment>
             {isInitialLoading ?
                 <Loading />
                 :
-                <InfiniteScroll
-                    dataLength={feed.length} //This is important field to render the next data
-                    next={handleLoadMore}
-                    hasMore={true}
-                    loader={
-                        <div className="flex items-center justify-center">
-                            <div className="animate-pulse rounded-md bg-muted h-5 w-5 flex justify-center items-center">
-                                <ArrowDownIcon />
-                            </div>
-                        </div>
-                    }
-                    endMessage={
-                        <p style={{ textAlign: 'center' }}>
-                            <b>Yay! You have seen it all</b>
-                        </p>
-                    }
-                >
+                <div
+                    ref={scrollBox}
+                    onScroll={handleScroll}
+                    className="w-full max-w-100 h-[500px] scrollbar-hide overflow-y-scroll snap-y snap-always snap-mandatory"
+                    >
+                    {feed.map((item, idx) => (
+                        <div
+                        key={item.id}
+                        className="px-2 py-5 w-full h-[500px] shrink-0 snap-start flex items-center justify-center"
+                        >
+                        {item.type === "card" && (
+                            <FlashCard id={idx} flashcard={item.content} />
+                        )}
 
-                    <div
-                        className="w-full max-w-100 h-[500px] scrollbar-hide overflow-y-scroll snap-y snap-always snap-mandatory">
-                        {feed.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="px-2 py-5 w-full h-[500px] shrink-0 snap-start flex items-center justify-center">
-                                {item.type === "card" && (
-                                    <FlashCard
-                                        id={idx}
-                                        flashcard={item.content}
-                                    />
-                                )}
-                                {item.type === "quiz" && (
-                                    <QuizCard
-                                        quiz={item.content}
-                                        incrementCorrectCount={incrementCorrect}
-                                        incrementQuizCount={incrementQuizCount}
-                                    />
-                                )}
-                                {item.type === "result" && (
-                                    <QuizResultSummary correctCount={correctCount} size={quizCount} />
-                                )}
-                            </div>
-                        ))}
+                        {item.type === "quiz" && (
+                            <QuizCard
+                            quiz={item.content}
+                            incrementCorrectCount={incrementCorrect}
+                            incrementQuizCount={incrementQuizCount}
+                            />
+                        )}
+
+                        {item.type === "result" && (
+                            <QuizResultSummary correctCount={correctCount} size={quizCount} />
+                        )}
+                        </div>
+                    ))}
+
+                    {isFetchingMore && (
+                        <div className="h-[80px] flex items-center justify-center text-sm">
+                        Generating more...
+                        </div>
+                    )}
                     </div>
-                </InfiniteScroll>
             }
         </React.Fragment >
     );
