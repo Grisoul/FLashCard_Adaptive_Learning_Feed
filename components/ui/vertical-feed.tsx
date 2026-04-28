@@ -24,6 +24,7 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
     const [mounted, setMounted] = useState(false);
     const [correctCount, setCorrectCount] = useState(0);
     const [quizCount, setQuizCount] = useState(0);
+    const hasFetchedInitial = useRef(false);
 
     const [isFetchingMore, setIsFetchingMore] = useState(false);
     const nextBatchRef = useRef(2);
@@ -46,19 +47,23 @@ export default function VerticalFeed({ notes }: VerticalFeedProps) {
         if (!el || isFetchingMore || isInitialLoading) return;
 
         const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
-        const halfwayThroughCurrentBuffer = remaining < el.clientHeight * 10;
+        const shouldPrefetch = remaining < el.clientHeight * 18;
 
-        if (halfwayThroughCurrentBuffer) {
+        if (shouldPrefetch) {
+            console.log("prefetching next batch");
             setIsFetchingMore(true);
 
             fetchBatch(nextBatchRef.current).finally(() => {
-            setIsFetchingMore(false);
-            });
-        }
+                setIsFetchingMore(false);
+        });
+}
     };
 
     // initial fetch
     useEffect(() => {
+        if (hasFetchedInitial.current) return;
+
+        hasFetchedInitial.current = true;
         setMounted(true);
         fetchBatch(1);
     }, []);
