@@ -76,10 +76,14 @@ export async function POST(req: Request) {
 
         return NextResponse.json(parsed);
 
-    } catch (err) {
-        return NextResponse.json(
-            { error: "Something went wrong" },
-            { status: 500 }
-        );
-    }
+    } } catch (err) {
+  console.error("Gemma route error:", err);
+
+    return NextResponse.json(
+        {
+        error: "Something went wrong",
+        detail: err instanceof Error ? err.message : String(err),
+        },
+        { status: 500 }
+    );
 }
